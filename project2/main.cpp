@@ -39,7 +39,7 @@ Vector2 randomDirection();
 constexpr int   SCREEN_WIDTH  = 1600,
                 SCREEN_HEIGHT = 900,
                 FPS           = 60,
-                PADDLE_SPEED  = 200,
+                PADDLE_SPEED  = 400,
                 BALL_SPEED    = 150;
 constexpr Vector2 ORIGIN      = { SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 },
                   BALL_SIZE   = { 50, 50},
@@ -133,7 +133,13 @@ void processInput()
             break;
         
         case GAME_OVER_MENU: 
-            if(IsKeyPressed(KEY_ENTER)) gAppStatus = SETTINGS_MENU;
+            if(IsKeyPressed(KEY_ENTER)){
+                gAppStatus = SETTINGS_MENU;
+                player1Score = 0; player2Score = 0;
+                ballsMovements.clear();
+                ballsPositions.clear();
+            }
+
             break;
 
         }
@@ -169,6 +175,14 @@ void update()
                     ballsMovements.push_back(randomDirection());
                     ballsMovements.push_back(randomDirection());
                     break;
+                case  3 :
+                    ballsPositions.push_back(ORIGIN + Vector2{0, 50});
+                    ballsPositions.push_back(ORIGIN + Vector2{0, -50});
+                    ballsPositions.push_back(ORIGIN + Vector2{0, -150});
+                    ballsMovements.push_back(randomDirection());
+                    ballsMovements.push_back(randomDirection());
+                    ballsMovements.push_back(randomDirection());
+                    break;
                 case  -1 :
                     ballsPositions.pop_back();
                     ballsMovements.pop_back();
@@ -178,7 +192,7 @@ void update()
                     ballsPositions.pop_back();
                     ballsMovements.pop_back();
                     ballsMovements.pop_back();
-            break;
+                    break;
             }
         }
 
@@ -201,10 +215,19 @@ void update()
         if(ballsPositions[i].y <= BALL_SIZE.y || ballsPositions[i].y >= SCREEN_HEIGHT - BALL_SIZE.y) ballsMovements[i].y = -ballsMovements[i].y;
         }
 
-        // Check for collisions
+        // Check for collisions 
         for(int i = 0; i < static_cast<int>(ballsPositions.size()); i++){
-            if(isColliding(&gPaddle1Position, &PADDLE_SIZE, &ballsPositions[i], &BALL_SIZE)) ballsMovements[i].x = -ballsMovements[i].x;
-            if(isColliding(&gPaddle2Position, &PADDLE_SIZE, &ballsPositions[i], &BALL_SIZE)) ballsMovements[i].x = -ballsMovements[i].x;
+            if(isColliding(&gPaddle1Position, &PADDLE_SIZE, &ballsPositions[i], &BALL_SIZE)) 
+            {
+                ballsPositions[i].x = gPaddle1Position.x + BALL_SIZE.x;
+                if (ballsMovements[i].x < 0.0f) ballsMovements[i].x = -ballsMovements[i].x;
+            }
+
+            if(isColliding(&gPaddle2Position, &PADDLE_SIZE, &ballsPositions[i], &BALL_SIZE)) 
+            {
+                ballsPositions[i].x = gPaddle2Position.x - BALL_SIZE.x;
+                if (ballsMovements[i].x > 0.0f) ballsMovements[i].x = -ballsMovements[i].x;
+            }
         }
 
         // Check if point is Scored
@@ -333,8 +356,8 @@ void render()
             break;
         }
         case GAME_OVER_MENU: {
-            DrawText("GAME OVER", ORIGIN.x, 50, 80, DARKGRAY);
             DrawText((std::to_string(player1Score) + " : " + std::to_string(player2Score)).c_str(), ORIGIN.x, 100, 60, DARKGRAY);
+            DrawText("GAME OVER", 100, ORIGIN.Y - 60, 80, DARKGRAY);
             DrawText("PRESS ENTER TO CONTINUE", 100, ORIGIN.y, 40, DARKGRAY);
             break;
         }
@@ -354,8 +377,8 @@ Vector2 randomDirection(){
     float s = std::rand();
     float x = cosf(s), y = sinf(s);
     while(x > 2 * y || y > 2 * x){
-        float s = std::rand();
-        float x = cosf(s), y = sinf(s);
+        s = std::rand();
+        x = cosf(s); y = sinf(s);
     }
     return Vector2{x, y};
 }
@@ -375,5 +398,4 @@ int main(void)
 
     return 0;
 }
-
 
