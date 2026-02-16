@@ -55,6 +55,7 @@ float GetLength(const Vector2 *vector)
 void Normalise(Vector2 *vector)
 {
     float magnitude = GetLength(vector);
+    if(magnitude == 0) return ;
 
     vector->x /= magnitude;
     vector->y /= magnitude;
@@ -90,7 +91,7 @@ Vector2 operator+(const Vector2 vec1, const Vector2 vec2){
     return Vector2{vec1.x + vec2.x, vec1.y + vec2.y};
 }
 
-Vector2 operator+=(Vector2 vec1, const Vector2 vec2){
+Vector2& operator+=(Vector2& vec1, const Vector2 vec2){
     vec1.x += vec2.x; vec1.y += vec2.y;
     return vec1;
 }
