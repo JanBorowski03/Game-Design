@@ -128,6 +128,9 @@ void processInput()
                 if(IsKeyPressed(KEY_UP) || IsKeyDown(KEY_UP)) gPaddle2Movement.y -= 1;
                 if(IsKeyPressed(KEY_DOWN) || IsKeyDown(KEY_DOWN)) gPaddle2Movement.y += 1;    
             }
+            else{
+                gPaddle2Movement = randomDirection(); 
+            }
             Normalise(&gPaddle1Movement);
             Normalise(&gPaddle2Movement);
             break;
