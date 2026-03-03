@@ -37,6 +37,7 @@ float gPreviousTicks   = 0.0f,
       gTimeAccumulator = 0.0f,
       gLanderAngle     = 0.0f;
     
+bool landedOnPeak = false; 
      
 int   gLanderFuel      = 20000;
 
@@ -170,16 +171,14 @@ void update()
     while (deltaTime >= FIXED_TIMESTEP)
     {
         gLunarLander->update(FIXED_TIMESTEP, ground);
-        if (gLunarLander->isCollidingBottom())
+        if (gLunarLander->isCollidingBottom() || gLunarLander->getPosition().x > SCREEN_HEIGHT) 
         {
-            bool landedOnPeak = false;
             for (Entity *peak : gLandingPeaks)
             {
                 const float xDistance = fabsf(gLunarLander->getPosition().x - peak->getPosition().x);
-                const float xLimit = gLunarLander->getColliderDimensions().x * 0.5f;
+                const float xLimit = gLunarLander->getColliderDimensions().x * 0.3f;
 
                 if (xDistance <= xLimit) landedOnPeak = true;
-
             }
 
             gAppStatus = landedOnPeak ? GAMEWON : GAMEOVER;
